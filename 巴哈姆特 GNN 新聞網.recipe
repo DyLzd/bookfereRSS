@@ -7,7 +7,6 @@ class BasicUserRecipe1776318493(AutomaticNewsRecipe):
     oldest_article = 3
     max_articles_per_feed = 80
     auto_cleanup   = True
-    compress_news_images = True
 
     feeds          = [
         ('巴哈姆特 GNN 新聞網', 'https://gnn.gamer.com.tw/rss.xml'),
