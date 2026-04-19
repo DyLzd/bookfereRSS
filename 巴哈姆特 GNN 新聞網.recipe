@@ -1,28 +1,16 @@
 #!/usr/bin/env python
 # vim:fileencoding=utf-8
 from calibre.web.feeds.news import BasicNewsRecipe
-from datetime import timedelta
 
-class BasicUserRecipe1776318493(BasicNewsRecipe):
-    title          = '巴哈姆特 GNN 新聞網'
-    description    = '巴哈姆特 GNN 全站新聞'
-    oldest_article = timedelta(days=1)      # 改成只抓最近1天，避免抓太多
-    max_articles_per_feed = 20              # 先调小到20，测试通过后再慢慢加大
+class AdvancedUserRecipe1776352268(BasicNewsRecipe):
+    title          = 'GNN News'
+    language = 'zh' # 语言
+    encoding = 'utf-8' # 编码
+    oldest_article = 2
+    max_articles_per_feed = 60
     auto_cleanup   = True
-    remove_empty_feeds = True
+    compress_news_images = 2
 
-    # === 图片处理（关键，防止文件过大和结构问题）===
-    compress_news_images = True
-    compress_news_images_auto_size = 4      # 4 比默认16温和很多
-    compress_news_images_max_size = 300     # 每张图最大300KB
-    scale_news_images_to_device = True      # 先缩放到 Kindle 屏幕尺寸
-
-    # === 其他推荐设置 ===
-    timefmt = ' [%Y-%m-%d]'                 # 标题加上日期
-    encoding = 'utf-8'
-    no_stylesheets = True
-    keep_only_tags = []                     # 如果需要进一步清理，可以在这里加规则
-
-    feeds = [
-        ('巴哈姆特 GNN 新聞網', 'https://gnn.gamer.com.tw/rss.xml'),
+    feeds          = [
+        ('GNN News', 'https://gnn.gamer.com.tw/rss.xml'),
     ]
