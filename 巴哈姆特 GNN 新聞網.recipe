@@ -6,9 +6,9 @@ class AdvancedUserRecipe1776352268(BasicNewsRecipe):
     title          = 'GNN News'
     language = 'zh' # 语言
     encoding = 'utf-8' # 编码
-    utc_offset = 8 # 东8区
+    utc_offset = 15
     oldest_article = 2
-    max_articles_per_feed = 60
+    max_articles_per_feed = 80
     auto_cleanup   = True
     compress_news_images = 2
 
