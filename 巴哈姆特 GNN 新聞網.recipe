@@ -1,17 +1,47 @@
 #!/usr/bin/env python
 # vim:fileencoding=utf-8
 from calibre.web.feeds.news import BasicNewsRecipe
+import re
+from urllib.parse import urljoin
 
-class AdvancedUserRecipe1776352268(BasicNewsRecipe):
-    title          = 'GNN News'
+class GNN_ACGN(BasicNewsRecipe):
+    title          = 'GNN新聞'
     language = 'zh' # 语言
     encoding = 'utf-8' # 编码
-    utc_offset = 15
     oldest_article = 2
-    max_articles_per_feed = 80
+    max_articles_per_feed = 60
     auto_cleanup   = True
     compress_news_images = 2
 
-    feeds          = [
-        ('GNN News', 'https://gnn.gamer.com.tw/rss.xml'),
+    feeds = [
+        ('動漫畫', 'https://gnn.gamer.com.tw/index.php?k=5'),
+        ('手遊', 'https://gnn.gamer.com.tw/index.php?k=4'),
     ]
+
+    # 自定义解析索引页面，提取文章列表
+    def parse_index(self):
+        feeds_data = []
+        for feed_title, feed_url in self.feeds:
+            soup = self.index_to_soup(feed_url)
+            articles = []
+            
+            # 查找文章链接（根据页面结构，文章链接在 <a> 标签中，href 匹配 detail.php?sn=数字）
+            seen = set()
+            for link in soup.find_all('a', href=re.compile(r'detail\.php\?sn=\d+')):
+                title = link.get_text().strip()
+                if not title or title == '繼續閱讀':
+                    continue
+
+                url = urljoin(feed_url, link['href'])
+                if url in seen:
+                    continue
+                seen.add(url)
+
+                articles.append({
+                    'title': title,
+                    'url': url,
+                })
+            
+            feeds_data.append((feed_title, articles))
+        
+        return feeds_data
