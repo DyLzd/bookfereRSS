@@ -5,11 +5,11 @@ import re
 from urllib.parse import urljoin
 
 class GNN_ACGN(BasicNewsRecipe):
-    title          = 'GNN新聞'
+    title          = 'GNN 新聞'
     language = 'zh' # 语言
     encoding = 'utf-8' # 编码
     oldest_article = 1
-    max_articles_per_feed = 59
+    max_articles_per_feed = 50
     auto_cleanup   = True
     compress_news_images = 2
 
