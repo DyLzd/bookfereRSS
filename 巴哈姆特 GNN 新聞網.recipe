@@ -9,7 +9,7 @@ class GNN_ACGN(BasicNewsRecipe):
     language = 'zh' # 语言
     encoding = 'utf-8' # 编码
     oldest_article = 1
-    max_articles_per_feed = 49
+    max_articles_per_feed = 48
     auto_cleanup   = True
     compress_news_images = 2
 
