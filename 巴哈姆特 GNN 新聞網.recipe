@@ -9,9 +9,9 @@ class GNN_ACGN(BasicNewsRecipe):
     language = 'zh' # 语言
     encoding = 'utf-8' # 编码
     oldest_article = 1
-    max_articles_per_feed = 30
+    max_articles_per_feed = 25
     auto_cleanup   = True
-    compress_news_images = 2
+    compress_news_images = 1
 
     feeds = [
         ('動漫畫', 'https://gnn.gamer.com.tw/index.php?k=5'),
