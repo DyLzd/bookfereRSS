@@ -6,17 +6,56 @@ from urllib.parse import urljoin
 
 class GNN_ACGN(BasicNewsRecipe):
     title          = 'GNN NEWS'
-    language = 'zh' # 语言
-    encoding = 'utf-8' # 编码
+    language       = 'zh' # 语言
+    encoding       = 'utf-8' # 编码
     oldest_article = 1
     max_articles_per_feed = 22
-    auto_cleanup   = True
-    compress_news_images = 1
+    auto_cleanup   = False # 关闭自动清理，避免误杀多图少字的手办模型投稿
+
+    # 图片缩放与体积控制（适配 Kindle 25MB 邮箱推送上限）
+    compress_news_images = True
+    scale_news_images_to_device = False
+    scale_news_images = (800, 1000)
+    compress_news_images_max_size = 35 # 单张图片压缩上限 35KB
+
+    # 同时保留 GNN 官方新闻与创作大厅投稿（新版 artwork.php / 旧版 creationDetail.php）正文
+    keep_only_tags = [
+        dict(name='div', attrs={'class': 'GN-lbox3'}),           # GNN 官方新闻
+        dict(name='div', attrs={'class': 'article-header'}),     # 创作大厅新版标题区
+        dict(name='div', attrs={'id': 'div_illustration'}),      # 创作大厅插图区
+        dict(name='div', attrs={'id': 'article_content'}),       # 创作大厅新版正文
+        dict(name='div', attrs={'class': 'MSG-list8C'}),         # 创作大厅旧版正文
+    ]
+
+    remove_tags = [
+        dict(name='div', attrs={'class': ['GN-lbox3E', 'GN-lbox3F', 'sharebtn-container', 'form__buttonbar']}),
+        dict(name='ul', attrs={'class': 'socialShareMenu'}),
+        dict(name=['script', 'style', 'iframe']),
+    ]
 
     feeds = [
         ('動漫畫', 'https://gnn.gamer.com.tw/index.php?k=5'),
         ('手遊', 'https://gnn.gamer.com.tw/index.php?k=4'),
     ]
+
+    def preprocess_html(self, soup):
+        # 将懒加载图片的 data-src 转为 Calibre 可识别的 src
+        for img in soup.find_all('img'):
+            data_src = img.get('data-src')
+            if data_src and not img.get('src'):
+                img['src'] = data_src
+            src = img.get('src')
+            if src and src.startswith('//'):
+                img['src'] = 'https:' + src
+
+        # 兼容创作大厅 #div_illustration 把原图地址写在父元素 data-src 上的情况
+        ill = soup.find(id='div_illustration')
+        if ill:
+            for img in ill.find_all('img'):
+                parent_src = img.parent.get('data-src') if img.parent else None
+                if parent_src:
+                    img['src'] = parent_src
+        return soup
 
     # 自定义解析索引页面，提取文章列表
     def parse_index(self):
